@@ -1,5 +1,3 @@
-
-
 class Config:
     def __init__(self):
         self.set_position_topic = "set_position"
