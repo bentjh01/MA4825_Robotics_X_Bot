@@ -1,8 +1,7 @@
 import rospy
-from xbot_msgs import *
-from Configuration import Config
+from xbot_driver.Configuration import Config
 from dynamixel_sdk import *
-config  = Config
+config  = Config()
 
 class AX1xA:
     # https://emanual.robotis.com/docs/en/dxl/ax/ax-12a/

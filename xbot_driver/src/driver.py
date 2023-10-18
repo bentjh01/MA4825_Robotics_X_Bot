@@ -1,25 +1,25 @@
 import rospy
-from MotorClass import AX1xA
-from Configuration import Config
+from xbot_driver.MotorClass import AX1xA
+from xbot_driver.Configuration import Config
 from dynamixel_sdk import *
-from xbot_msgs import dxl_position_msg
+from xbot_msgs.msg import AX
 
 def callback(data): 
-    global motors
+    # global motors
     for motor in motors:
-        if data.id == motor.ID:
-            motor.set_position(data.goal)
+        if data.ID == motor.ID:
+            motor.set_position(data.Goal_Position)
 
 def driver_node():
-    global config
+    # global config
     rospy.init_node('driver_node')
-    rospy.Subscriber(config.set_position_topic, dxl_position_msg, callback)
+    rospy.Subscriber(config.set_position_topic, AX, callback)
     rospy.spin()
 
 def main():
     global config
     global motor_1, motor_2, motor_3, motor_4, motor_5, motors
-    config = Config
+    config = Config()
     portHandler = PortHandler(config.device_name)
 
     # Open port
@@ -44,9 +44,10 @@ def main():
     motor_3 = AX1xA("motor3", 3, portHandler)
     motor_4 = AX1xA("motor4", 4, portHandler)
     motor_5 = AX1xA("motor5", 5, portHandler)
+    motor_6 = AX1xA("motor5", 6, portHandler)
 
     motors = [motor_1, motor_2, motor_3, motor_4, motor_5]
-
+    print(f"READY. Subcribed to {config.set_position_topic}.")
     driver_node()
     
 if __name__ == "__main__":

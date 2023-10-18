@@ -107,7 +107,11 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES xbot_driver
-#  CATKIN_DEPENDS dynamixel_sdk roscpp rospy std_msgs
+ CATKIN_DEPENDS 
+    dynamixel_sdk 
+    roscpp 
+    rospy 
+    std_msgs
 #  DEPENDS system_lib
 )
 
@@ -126,6 +130,10 @@ include_directories(
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/xbot_driver.cpp
 # )
+
+# add_executable(read_write_node src/read_write_node.cpp)
+# add_dependencies(read_write_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# target_link_libraries(read_write_node ${catkin_LIBRARIES})
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -152,6 +160,11 @@ include_directories(
 #   ${catkin_LIBRARIES}
 # )
 
+################################################################################
+# Setup for python modules and scripts
+################################################################################
+catkin_python_setup()
+
 #############
 ## Install ##
 #############
@@ -161,10 +174,10 @@ include_directories(
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
-# catkin_install_python(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+catkin_install_python(PROGRAMS
+  src/driver.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
