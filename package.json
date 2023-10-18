@@ -1,0 +1,63 @@
+{
+  "name": "xbot-ui",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@coreui/coreui": "^4.3.2",
+    "@testing-library/jest-dom": "^5.11.9",
+    "@testing-library/react": "^11.2.5",
+    "@testing-library/user-event": "^12.8.1",
+    "bootstrap": "^5.3.2",
+    "classnames": "^2.3.2",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.2",
+    "react-grid-layout": "^1.4.2",
+    "react-router": "^6.17.0",
+    "react-router-dom": "^6.17.0",
+    "react-scripts": "4.0.3",
+    "roslib": "^1.3.0",
+    "sass": "^1.32.8",
+    "web-vitals": "^1.1.0",
+    "xbot-ui": "file:"
+  },
+  "scripts": {
+    "start": "react-scripts --openssl-legacy-provider start",
+    "build": "react-scripts --openssl-legacy-provider build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env"
+    ],
+    "plugins": [
+      [
+        "@babel/plugin-proposal-class-properties",
+        {
+          "loose": true
+        }
+      ]
+    ]
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.13.0"
+  }
+}
