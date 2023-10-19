@@ -2,7 +2,7 @@ import '../App.css';
 import '../scss/style.scss';
 import LoginForm from '../components/LoginForm'
 
-function Login() {
+function Login( { action } ) {
   // let button;
 
   // if (loginSuccess()) {
@@ -16,7 +16,7 @@ function Login() {
   // }
 
   return (
-    <LoginForm />
+    <LoginForm action={action} />
   );
 }
 
