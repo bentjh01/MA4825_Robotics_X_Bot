@@ -8,7 +8,6 @@ function Locker({ onLockerChange }) {
     let val = event.target.value;
     val = val.replace(/\D/g|0, '');
     onLockerChange(val);
-    console.log("finished locker")
   }
 
   return (

@@ -21,18 +21,18 @@ function LoginForm() {
 
   function handleLockerChange(locker) {
     setLocker(locker);
-    console.log("loginForm pw", pw)
+    // console.log("loginForm pw", pw)
   }
 
   function handlePwChange(pw) {
     setPw(pw);
-    console.log("loginForm pw", pw)
+    // console.log("loginForm pw", pw)
   }
 
   // set to be callback function
   const checkEmptyInputs = useCallback(() => {
-    console.log("Locker input", locker)
-    console.log("PW input", pw)
+    // console.log("Locker input", locker)
+    // console.log("PW input", pw)
     if (locker === '' || pw === '')  {
       setDisableButton(true);
     }
@@ -42,34 +42,34 @@ function LoginForm() {
   }, [locker, pw]);
 
   function checkEmptyLocker() {
-    console.log("lockers array", lockers)
     return !lockers.some(item => locker === item);
   }
 
   function checkPassword() {
-    console.log("loginForm Locker", locker)
-    console.log("loginForm pw", pw)
-    
-    if (locker.repeat(6) === pw && locker !== '') {
-      setPath('/completion')
-      console.log("Unlock Locker!")
-      return true
-    }
-    else {
-      alert("Failed, pls try again")
-      return false;
-    }
+    return (locker.repeat(6) === pw && locker !== '');
   }
 
   function loginSuccess() {
-    if (checkEmptyLocker() && checkPassword()){
-      lockers.push(locker);
-      lockers.sort((a, b) => a - b);
-      console.log(lockers);
-      // setLockers(lockers)
-      return true
+    if (checkPassword()) {
+      if (checkEmptyLocker()){
+        lockers.push(locker);
+        lockers.sort((a, b) => a - b);
+        sessionStorage.setItem("lockers", JSON.stringify(lockers))
+        setPath('/completion');
+        console.log("okay")
+        return true
+      }
+      else if (!checkEmptyLocker()) {
+        console.log("not empty")
+        alert(`Locker ${locker} is taken, please choose another locker`);
+        return false;
+      }
     }
-    return false;
+    else {
+      console.log("wrong")
+      alert("Failed, pls try again")
+      return false;
+    }
   }
 
   // Update if locker input change
@@ -84,7 +84,6 @@ function LoginForm() {
 
   // Update if Submit button is pressed
   useEffect(() => {
-    console.log(path)
     navigate(path);
   }, [path, navigate])
 
