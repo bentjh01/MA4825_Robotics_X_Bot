@@ -5,7 +5,7 @@ function RetrieveKey() {
   return (
     <div>
       Retrieve Key
-      <Login/>
+      <Login action="retrieve"/>
     </div>
   );
 }

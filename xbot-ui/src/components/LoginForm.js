@@ -7,7 +7,7 @@ import Locker from './Locker';
 import Password from './Password';
 import LoginButton from './LoginButton';
 
-function LoginForm() {
+function LoginForm({ action }) {
   const navigate = useNavigate();
 
   // const [lockers, setLockers] = useState([]);
@@ -42,33 +42,58 @@ function LoginForm() {
   }, [locker, pw]);
 
   function checkEmptyLocker() {
-    return !lockers.some(item => locker === item);
+    return !lockers.some(item => item === locker);
   }
 
   function checkPassword() {
     return (locker.repeat(6) === pw && locker !== '');
   }
 
-  function loginSuccess() {
+  function storeSuccess() {
     if (checkPassword()) {
       if (checkEmptyLocker()){
         lockers.push(locker);
         lockers.sort((a, b) => a - b);
         sessionStorage.setItem("lockers", JSON.stringify(lockers))
         setPath('/completion');
-        console.log("okay")
         return true
       }
-      else if (!checkEmptyLocker()) {
-        console.log("not empty")
+      else {
         alert(`Locker ${locker} is taken, please choose another locker`);
         return false;
       }
     }
     else {
-      console.log("wrong")
       alert("Failed, pls try again")
       return false;
+    }
+  }
+
+  function retrieveSuccess() {
+    if (checkPassword()) {
+      if (!checkEmptyLocker()){
+        lockers = lockers.filter(item => item !== locker)
+        sessionStorage.setItem("lockers", JSON.stringify(lockers))
+        setPath('/completion');
+        return true
+      }
+      else {
+        alert(`Nothing inside locker ${locker}, please choose another locker`);
+        return false;
+      }
+    }
+    else {
+      alert("Failed, pls try again")
+      return false;
+    }
+  }
+
+  function loginSuccess () {
+    if (action === "store") {
+      return storeSuccess();
+    }
+    else if (action === "retrieve") {
+      return retrieveSuccess();
     }
   }
 
