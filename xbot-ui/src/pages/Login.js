@@ -3,8 +3,6 @@ import '../scss/style.scss';
 import LoginForm from '../components/LoginForm'
 
 function Login() {
-  let lockers = [];
-  sessionStorage.setItem("lockers", JSON.stringify(lockers));
   // let button;
 
   // if (loginSuccess()) {

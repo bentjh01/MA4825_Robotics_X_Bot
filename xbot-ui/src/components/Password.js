@@ -7,7 +7,6 @@ function Password({ onPasswordChange }) {
   function handleChange(event) {
     const val = event.target.value
     onPasswordChange(val);
-    console.log("finished pw")
   }
 
   return (
