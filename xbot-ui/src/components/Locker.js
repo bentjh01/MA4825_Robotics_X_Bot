@@ -12,7 +12,11 @@ function Locker({ onLockerChange }) {
 
   return (
     <div>
-      <div>Locker</div>
+      <div>
+        <h4>
+          Locker
+        </h4>
+      </div>
       <input 
         id="locker" 
         className="login"

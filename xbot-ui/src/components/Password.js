@@ -11,7 +11,11 @@ function Password({ onPasswordChange }) {
 
   return (
     <div>
-      <div>Password</div>
+      <div>
+        <h4>
+          Password
+        </h4>
+      </div>
       <input 
         id="password" 
         className="login"

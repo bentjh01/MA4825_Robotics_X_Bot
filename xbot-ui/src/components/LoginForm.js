@@ -109,17 +109,27 @@ function LoginForm({ action }) {
 
   // Update if Submit button is pressed
   useEffect(() => {
-    navigate(path);
-  }, [path, navigate])
+    navigate(path, { state: { 
+      action: action,
+      data: locker }});
+  }, [path, navigate, action, locker])
 
   return (
-    <div>
-        <Locker onLockerChange={handleLockerChange} />
-        <Password onPasswordChange={handlePwChange} />
-        <LoginButton 
-          onClick={loginSuccess}
-          disabled={disableButton}
-        />
+    <div className="container">
+      <div className="card-body">
+        <div className="row py-2 text-center">
+          <Locker onLockerChange={handleLockerChange} />
+        </div>
+        <div className="row py-2 text-center">
+          <Password onPasswordChange={handlePwChange} />
+        </div>
+        <div className="row py-2 text-center">
+          <LoginButton 
+            onClick={loginSuccess}
+            disabled={disableButton}
+          />
+        </div>
+      </div>
     </div>
   );
 }
