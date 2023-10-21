@@ -1,7 +1,11 @@
 import { Link } from 'react-router-dom';
 import '../App.css';
 import '../scss/style.scss';
+import Connection from '../components/Connection'
 
+/**
+ * Mounting connection, and unmount when leaving this page
+ */
 function Completion() {
   return (
     <div>
@@ -12,6 +16,7 @@ function Completion() {
           OK
         </button>
       </Link>
+      <Connection ip="192.168.0.1" data="0"/>
     </div>
   );
 }

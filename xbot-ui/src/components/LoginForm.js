@@ -2,7 +2,6 @@ import '../App.css';
 import '../scss/style.scss';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import ROSLIB from 'roslib';
 import Locker from './Locker';
 import Password from './Password';
 import LoginButton from './LoginButton';
@@ -16,7 +15,8 @@ function LoginForm({ action }) {
   const [disableButton, setDisableButton] = useState(true);
   const [path, setPath] = useState('');
 
-  let lockers = JSON.parse(sessionStorage.getItem("lockers"));
+  // intilialise if new session, or get updated value from chrome.
+  let lockers = JSON.parse(sessionStorage.getItem("lockers")); // important to stringify
   console.log(lockers)
 
   function handleLockerChange(locker) {
@@ -52,8 +52,8 @@ function LoginForm({ action }) {
   function storeSuccess() {
     if (checkPassword()) {
       if (checkEmptyLocker()){
-        lockers.push(locker);
-        lockers.sort((a, b) => a - b);
+        lockers.push(locker);           // add into array
+        lockers.sort((a, b) => a - b);  // and sort
         sessionStorage.setItem("lockers", JSON.stringify(lockers))
         setPath('/completion');
         return true
@@ -72,7 +72,7 @@ function LoginForm({ action }) {
   function retrieveSuccess() {
     if (checkPassword()) {
       if (!checkEmptyLocker()){
-        lockers = lockers.filter(item => item !== locker)
+        lockers = lockers.filter(item => item !== locker) // remove from array
         sessionStorage.setItem("lockers", JSON.stringify(lockers))
         setPath('/completion');
         return true
