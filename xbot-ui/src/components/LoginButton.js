@@ -8,7 +8,7 @@ function LoginButton({ onClick, disabled }) {
     <div>
       <button 
         id="login-button"
-        className="login"
+        className="btn btn-primary btn-large"
         onClick={onClick}
         disabled={disabled}
       >
