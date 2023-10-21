@@ -109,8 +109,10 @@ function LoginForm({ action }) {
 
   // Update if Submit button is pressed
   useEffect(() => {
-    navigate(path, { state: { action: action }});
-  }, [path, navigate, action])
+    navigate(path, { state: { 
+      action: action,
+      data: locker }});
+  }, [path, navigate, action, locker])
 
   return (
     <div className="container">

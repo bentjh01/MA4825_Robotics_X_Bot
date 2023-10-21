@@ -10,7 +10,8 @@ import HomeButton from '../components/HomeButton'
 function Completion() {
   const location = useLocation();
   let text;
-  console.log(location)
+  console.log(location.state.action)
+  console.log(location.state.data)
   if (location.state.action === "store") {
     text = "Log in success!\nXBOT is putting your key.";
   }
@@ -28,7 +29,7 @@ function Completion() {
           <HomeButton />
         </div>
         <div className="row py-2 text-center">
-          <Connection ip="192.168.0.1" data="0"/>
+          <Connection ip="192.168.0.1" data={location.state.data}/>
         </div>
       </div>
     </div>
