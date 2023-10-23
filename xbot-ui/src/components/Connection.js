@@ -1,17 +1,17 @@
 import '../App.css';
 import '../scss/style.scss';
 import React, { useEffect } from 'react';
-// import { useNavigate } from 'react-router-dom';
 import ROSLIB from 'roslib';
 
 /**
  * 
  * @param {string} ip private ip address of router/ hotspot
  * @param {string} data the locker number
+ * @param {string} action store/retrieve
  * 
  * @return Connection, empty div component
  */
-function Connection({ ip, data }) {
+function Connection({ ip, data, action }) {
   const ros = new ROSLIB.Ros();
   
   function intialiseRos() {
@@ -32,15 +32,16 @@ function Connection({ ip, data }) {
     let ui = new ROSLIB.Topic({
       ros: ros,
       name: "/ui",
-      messageType: "uint8/locker"
+      messageType: "std_msgs/String"
     })
 
     let locker = new ROSLIB.Message({
-      data: Number(data),
+      data: `${data}${action}`,
     })
 
     console.log("publishing ui", locker);
     ui.publish(locker);
+    console.log("published successfuly")
   }
 
   // mounting starts, and unmounting starts
