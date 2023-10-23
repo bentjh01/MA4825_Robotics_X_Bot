@@ -17,6 +17,9 @@ function LoginForm({ action }) {
 
   // intilialise if new session, or get updated value from chrome.
   let lockers = JSON.parse(sessionStorage.getItem("lockers")); // important to stringify
+  if (lockers === null) {
+    sessionStorage.setItem("lockers", JSON.stringify([]));
+  }
   console.log(lockers)
 
   function handleLockerChange(locker) {
