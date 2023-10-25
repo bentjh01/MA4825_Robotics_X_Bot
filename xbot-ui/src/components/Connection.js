@@ -56,7 +56,6 @@ function Connection({ ip, data, action }) {
 
   return (
     <div>
-      ROS Connection
     </div>
   );
 }

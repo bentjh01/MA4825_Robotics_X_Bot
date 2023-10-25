@@ -15,22 +15,25 @@ function Completion() {
   console.log(action)
   console.log(data)
   if (action === "store") {
-    text = "Log in success!\nXBOT is putting your key.";
+    text = "Please put your key on XBOT, \nXBOT will store it";
   }
   else if (action === "retrieve") {
-    text = "Log in success!\nXBOT is getting your key.";
+    text = "XBOT is getting your key, \nplease collect it.";
   }
 
   return (
-    <div className="container">
+    <div className="container d-flex center">
       <div className="card-body">
-        <div className="row py-2 text-center">
-          <h3>{text}</h3>
+        <div className="row py-2 text-center multiline">
+          <h3>
+            <p>Log in success</p>
+            <p>{text}</p>
+          </h3>
         </div>
-        <div className="row my-4 py-2 text-center">
+        <div className="row py-2 text-center">
           <HomeButton />
         </div>
-        <div className="row py-2 text-center">
+        <div className="row py-2 d-flex text-center">
           <Connection ip="10.42.0.1" data={data} action={action} />
         </div>
       </div>
