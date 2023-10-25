@@ -1,3 +1,11 @@
+body {
+  background-image: url(../src/images/XBOT-wallpaper.png);
+  background-position: center;
+  background-attachment: fixed;
+  background-size: auto auto;
+  color: white;
+}
+
 .App {
   text-align: center;
 }
@@ -28,20 +36,15 @@
   color: #61dafb;
 }
 
-.centre {
-  margin:auto;
-}
-
-.centre-horizontal {
-  margin: auto;
-  width: 50%;
-}
-
-.centre-vertical {
-  margin: auto;
+.center {
   position: absolute;
   top: 50%;
-  transform: translate(0, -50%);
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.multiline {
+  white-space: pre-line;
 }
 
 @keyframes App-logo-spin {
