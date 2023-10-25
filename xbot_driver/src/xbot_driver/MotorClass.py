@@ -18,11 +18,12 @@ class AX1xA:
     def specs(self):
         self.baude_rate = config.baude_rate # [bps]
         self.weight = 54.6 #[g]
-        self.resolution = 0.29 # [deg]
+        self.resolution = 0.29 # [deg] Angle 0-300 mapped to 0-1023
         self.joint = True # False if endless a.k.a motor mode
         self.reduction_ratio = 254 
         self.stall_torque = 1.5 # [Nm]
         self.protocol_version = 1.0
+        self.max_position = 1023
 
     def address(self):
         self.model_number_address = 0
@@ -91,6 +92,10 @@ class AX1xA:
         # self.moving_status = 
         # self.lock = 
         # self.punch = 
+
+    def deg2position(self, deg):
+        position = deg/360 * self.max_position
+        return int(position)
 
     def set_position(self, goal):
         self.goal_position = goal
