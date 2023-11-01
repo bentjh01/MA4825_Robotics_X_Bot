@@ -17,6 +17,15 @@ This repo is for the course project MA4825 Robotics
 \$ `lsusb | grep FT232H`
 2. Check device port  
 \$ `ls /dev/ttyUSB*`
+#### Startiing Nodes Individually
+``` roscore ```
+1. Sensors
+   `rosrun xbot_sensors limit_switch.py`
+3. Drive
+   `rosrun xbot_drive drive.py`
+5. Inverse Kinematics
+6. Command
+   `rosrun xbot_cmd ui_listener.py`
 ### ROS
 [ROS Wiki Noetic Installation](http://wiki.ros.org/noetic/Installation/Ubuntu)
 #### Dynamixel Workbench
