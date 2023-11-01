@@ -22,7 +22,7 @@ This repo is for the course project MA4825 Robotics
 1. Sensors
    `rosrun xbot_sensors limit_switch.py`
 3. Drive
-   `rosrun xbot_drive drive.py`
+   `rosrun xbot_driver driver.py`
 5. Inverse Kinematics
 6. Command
    `rosrun xbot_cmd ui_listener.py`
