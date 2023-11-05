@@ -1,6 +1,6 @@
 import rospy
 from std_msgs import String
-from std_msgs.msg import Bool
+from std_msgs import Bool
 from xbot_msgs.msg import pose_action
 
 unit_hor = 10
