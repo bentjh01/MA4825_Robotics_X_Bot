@@ -44,7 +44,7 @@ class XBotDriver():
         self.set_position_rate = rospy.Rate(10)
         self.state_publish_rate = rospy.Rate(10)
 
-    def set_positon_callback(self, msg):
+    def set_position_callback(self, msg):
         for motor in self.motors:
             if msg.ID == motor.ID:
                 motor.set_position(msg.Goal_Position)
