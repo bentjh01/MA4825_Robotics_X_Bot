@@ -71,5 +71,3 @@ class XBotDriver():
 if __name__ == "__main__":
     xBotDriver = XBotDriver()
     xBotDriver.main()
-    # except rospy.ROSInterruptException:
-        # pass
