@@ -96,12 +96,18 @@ class AX1xA:
     def set_goal_position(self, goal_position):
         self.goal_position = goal_position
         dxl_comm_result, dxl_error = self.packetHandler.write2ByteTxRx(self.portHandler, self.ID, self.goal_position_address, self.goal_position)
-        # print(f'{self.ID} position {self.goal_position}')
-
+        if dxl_comm_result != 0:
+            print("%s" % self.packetHandler.getTxRxResult(dxl_comm_result))
+        elif dxl_error != 0:
+            print("%s" % self.packetHandler.getRxPacketError(dxl_error))
+            
     def set_moving_speed(self, moving_speed = 128):
         self.moving_speed = moving_speed
         dxl_comm_result, dxl_error = self.packetHandler.write2ByteTxRx(self.portHandler, self.ID, self.moving_speed_address, self.moving_speed)
-        # print(f'{self.ID} speed {self.moving_speed}')
+        if dxl_comm_result != 0:
+            print("%s" % self.packetHandler.getTxRxResult(dxl_comm_result))
+        elif dxl_error != 0:
+            print("%s" % self.packetHandler.getRxPacketError(dxl_error))
 
     def set_cw_ccw_limits(self, cw_limit = None, ccw_limit = None):
         # if both zero, then wheel mode enabled
@@ -131,6 +137,10 @@ class AX1xA:
         else:
             self.led = 0
         dxl_comm_result, dxl_error = self.packetHandler.write1ByteTxRx(self.portHandler, self.ID, self.led_address, self.led)
+        if dxl_comm_result != 0:
+            print("%s" % self.packetHandler.getTxRxResult(dxl_comm_result))
+        elif dxl_error != 0:
+            print("%s" % self.packetHandler.getRxPacketError(dxl_error))
 
     def get_position(self):
         dxl_present_position, dxl_comm_result, dxl_error = self.packetHandler.read2ByteTxRx(self.portHandler, self.ID, self.present_position_address)
