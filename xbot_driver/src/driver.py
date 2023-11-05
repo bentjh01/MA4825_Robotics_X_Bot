@@ -4,51 +4,76 @@ from xbot_driver.Configuration import Config
 from dynamixel_sdk import *
 from xbot_msgs.msg import AX
 
-def callback(data): 
-    # global motors
-    for motor in motors:
-        if data.ID == motor.ID:
-            motor.set_position(data.Goal_Position)
+class XBotDriver():
+    def __init__(self): 
+        self.config = Config()
+        self.portHandler = PortHandler(self.config.device_name)
 
-def driver_node():
-    # global config
-    rospy.init_node('driver_node')
-    rospy.Subscriber(config.set_position_topic, AX, callback)
-    rospy.spin()
+        # Open port
+        try:
+            self.portHandler.openPort()
+            print("Succeeded to open the port")
+        except:
+            print("Failed to open the port")
+            quit()
 
-def main():
-    global config
-    global motor_1, motor_2, motor_3, motor_4, motor_5, motors
-    config = Config()
-    portHandler = PortHandler(config.device_name)
+        # Set port baudrate
+        try:
+            self.portHandler.setBaudRate(self.config.baude_rate)
+            print("Succeeded to change the baudrate")
+        except:
+            print("Failed to change the baudrate")
+            quit()
 
-    # Open port
-    try:
-        portHandler.openPort()
-        print("Succeeded to open the port")
-    except:
-        print("Failed to open the port")
-        quit()
+        # Initialise motors
+        self.motor_1 = AX1xA("motor_1", 1, self.portHandler)
+        self.motor_2 = AX1xA("motor_2", 2, self.portHandler)
+        self.motor_3 = AX1xA("motor_3", 3, self.portHandler)
+        self.motor_4 = AX1xA("motor_4", 4, self.portHandler)
+        self.motor_5 = AX1xA("motor_5", 5, self.portHandler)
+        self.motor_6 = AX1xA("motor_6", 6, self.portHandler)
 
-    # Set port baudrate
-    try:
-        portHandler.setBaudRate(config.baude_rate)
-        print("Succeeded to change the baudrate")
-    except:
-        print("Failed to change the baudrate")
-        quit()
+        self.motors = [self.motor_1, self.motor_2, self.motor_3, self.motor_4, self.motor_5, self.motor_6]
 
-    # Initialise motors
-    motor_1 = AX1xA("base_motor", 1, portHandler)
-    motor_2 = AX1xA("motor2", 2, portHandler)
-    motor_3 = AX1xA("motor3", 3, portHandler)
-    motor_4 = AX1xA("motor4", 4, portHandler)
-    motor_5 = AX1xA("motor5", 5, portHandler)
-    motor_6 = AX1xA("motor5", 6, portHandler)
+        for motor in self.motors:
+            motor.set_torque_mode(True)
 
-    motors = [motor_1, motor_2, motor_3, motor_4, motor_5]
-    print(f"READY. Subcribed to {config.set_position_topic}.")
-    driver_node()
+        rospy.init_node('xbot_driver')
+        self.state_publisher = rospy.Publisher('motor_states', AX, queue_size=10)
+        self.set_position_subscriber = rospy.Subscriber('set_position', AX, self.set_position_callback)
+        self.set_position_rate = rospy.Rate(10)
+        self.state_publish_rate = rospy.Rate(10)
+
+    def set_positon_callback(self, msg):
+        for motor in self.motors:
+            if msg.ID == motor.ID:
+                motor.set_position(msg.Goal_Position)
+                if msg.Moving_Speed == 0:
+                    continue
+                motor.set_moving_speed(msg.Moving_Speed)
+        self.set_position_rate.sleep()
+
+    def motor_state_update(self):
+        for motor in self.motors:
+            msg = AX()
+            id = motor.ID
+            present_position = motor.get_position()
+            moving = motor.get_moving()
+            msg.ID = id
+            msg.Present_Position = present_position
+            msg.Moving = moving
+            self.state_publisher.publish(msg)
+        self.state_publish_rate.sleep()
+
+    def main(self):
+        print('Running')
+        while not rospy.is_shutdown():
+            self.set_position_subscriber
+            self.motor_state_update()
     
 if __name__ == "__main__":
-    main()
+    xBotDriver = XBotDriver()
+    try:
+        xBotDriver.main()
+    except rospy.ROSInterruptException:
+        pass

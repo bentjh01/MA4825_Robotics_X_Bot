@@ -81,7 +81,7 @@ class AX1xA:
         # self.cw_compliance_slope = 
         # self.ccw_compliance_slope = 
         self.goal_position = 0
-        # self.moving_speed = 
+        self.moving_speed = 128
         # self.torque_limit = 
         self.present_position = self.get_position()
         # self.present_speed = 
@@ -97,9 +97,13 @@ class AX1xA:
         position = deg/360 * self.max_position
         return int(position)
 
-    def set_position(self, goal):
-        self.goal_position = goal
-        dxl_comm_result, dxl_error = self.packetHandler.write4ByteTxRx(self.portHandler, self.ID, self.goal_position_address, self.goal_position)
+    def set_goal_position(self, goal_position):
+        self.goal_position = goal_position
+        dxl_comm_result, dxl_error = self.packetHandler.write2ByteTxRx(self.portHandler, self.ID, self.goal_position_address, self.goal_position)
+
+    def set_moving_speed(self, moving_speed = 128):
+        self.moving_speed = moving_speed
+        dxl_comm_result, dxl_error = self.packetHandler.write2ByteTxRx(self.portHandler, self.ID, self.moving_speed_address, self.moving_speed)
 
     def set_cw_ccw_limits(self, cw_limit = None, ccw_limit = None):
         # if both zero, then wheel mode enabled
@@ -125,7 +129,7 @@ class AX1xA:
         dxl_comm_result, dxl_error = self.packetHandler.write1ByteTxRx(self.portHandler, self.ID, self.led_address, self.led)
 
     def get_position(self):
-        dxl_present_position, dxl_comm_result, dxl_error = self.packetHandler.read4ByteTxRx(self.portHandler, self.ID, self.present_position_address)
+        dxl_present_position, dxl_comm_result, dxl_error = self.packetHandler.read2ByteTxRx(self.portHandler, self.ID, self.present_position_address)
         self.present_position = dxl_present_position
         return dxl_present_position
     
@@ -137,3 +141,7 @@ class AX1xA:
     def get_model_number(self):
         dxl_model_number, dxl_comm_result, dxl_error = self.packetHandler.read2ByteTxRx(self.portHandler, self.ID, self.model_number_address)
         return dxl_model_number
+    
+    def get_moving(self):
+        dxl_moving_status, dxl_comm_result, dxl_error = self.packetHandler.read1ByteTxRx(self.portHandler, self.ID, self.moving_status_address)
+        return dxl_moving_status
