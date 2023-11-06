@@ -3,14 +3,16 @@ from xbot_msgs.msg import AXState
 from sensor_msgs.msg import JointState
 import sys
 from xbot_control.simple_controller_configuration import Config
+from xbot_control.controller_tools import FIFOQueue
 
 config = Config()
-
+#TODO-add flick offset when store or retrieve
+#TODO-add FIFO queue for goal msgs DONE
+#TODO-add option to add offset to compensate mechanical tilt
 class SimpleController():
     def __init__(self, reset):
-        self.goal_positions = []
+        self.goal_positions_queue = FIFOQueue()
         self.goal_speeds = []
-        self.goal_positions_loaded = False
         self.current_positions = []
         self.move_complete = False
         self.led_enabled_list = []
@@ -59,12 +61,11 @@ class SimpleController():
             # elif proposed_position > max_position:
             #     proposed_position = max_position
             goal_positons.append(proposed_position)
-        self.goal_positions = goal_positons
-        self.goal_positions_loaded = True
+        self.goal_positions_queue.enqueue(goal_positons)
 
     def find_move_time(self):
         dtheta_list = []
-        for i, goal_position in enumerate(self.goal_positions):
+        for i, goal_position in enumerate(self.goal_positions_queue.query(0)):
             dtheta = goal_position - self.current_positions[i]
             dtheta_list.append(dtheta)
         max_dtheta = max(dtheta_list)
@@ -89,9 +90,10 @@ class SimpleController():
 
     def publish_cmd_state(self):
         cmd_state_msg = AXState()
+        goal_positions = self.goal_positions_queue.dequeue()
         for i, name in enumerate(self.joint_names):
             cmd_state_msg.Moving_Speed[i] = self.goal_speeds[i]
-            cmd_state_msg.Goal_Position[i] = self.goal_positions[i]
+            cmd_state_msg.Goal_Position[i] = goal_positions[i]
             cmd_state_msg.LED[i] = self.led_enabled_list[i]
             cmd_state_msg.Torque_Enable[i] = self.torque_enabled_list[i]
         self.cmd_state_publisher(cmd_state_msg)
@@ -102,14 +104,12 @@ class SimpleController():
             self.motor_state_subscriber
             self.set_state_subscriber
             if self.reset:
-                self.goal_positions = [0., 0., 0., 0., 0.]
-                self.goal_positions_loaded = True
+                self.goal_positions_queue.enqueue([0., 0., 0., 0., 0.])
                 print('Resetting')
-            if not self.move_complete or not self.goal_positions_loaded:
+            if not self.move_complete or self.goal_positions_queue.is_empty():
                 continue
             self.prepare_move_motors()
             self.publish_cmd_state()
-            self.goal_positions_loaded = False
             print('Motion Complete')
 
 if __name__ == '__main__':
