@@ -44,9 +44,10 @@ class XBotDriver():
 
     def __init__rospy(self):
         node_name = 'xbot_driver'
+        controller_name = 'xbot_simple_controller'
         rospy.init_node(node_name)
         self.state_publisher = rospy.Publisher(f'/{node_name}/motor_states', AXState, queue_size=10)
-        self.cmd_state_subscriber = rospy.Subscriber(f'/{node_name}/cmd_state', AXState, self.cmd_state_callback)
+        self.cmd_state_subscriber = rospy.Subscriber(f'/{controller_name}/cmd_state', AXState, self.cmd_state_callback)
         self.state_publish_rate = rospy.Rate(10)
 
     def cmd_state_callback(self, msg):
@@ -70,6 +71,7 @@ class XBotDriver():
             msg.Torque_Enable[i] = motor.torque_enabled
             msg.Model_Number[i] = motor.model_number
             msg.Baud_Rate[i] = motor.baude_rate
+            msg.Goal_Position[i] = uint102radian(motor.goal_position)
             present_position = uint102radian(motor.get_position())
             moving = bool(motor.get_moving_status())
             msg.Present_Position[i] = present_position

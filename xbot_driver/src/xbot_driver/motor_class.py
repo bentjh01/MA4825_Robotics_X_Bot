@@ -1,5 +1,5 @@
 from dynamixel_sdk import *
-from configuration import Config
+from xbot_driver.driver_configuration import Config
 config  = Config()
 
 class AX1xA:
