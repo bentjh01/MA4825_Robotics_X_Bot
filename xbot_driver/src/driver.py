@@ -66,7 +66,7 @@ class XBotDriver():
         print('Running')
         while not rospy.is_shutdown():
             self.set_position_subscriber
-            # self.motor_state_update()
+            self.motor_state_update()
     
 if __name__ == "__main__":
     xBotDriver = XBotDriver()
