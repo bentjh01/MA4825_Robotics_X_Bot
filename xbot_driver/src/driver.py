@@ -1,12 +1,19 @@
-import rospy
-from xbot_driver.MotorClass import AX1xA
-from xbot_driver.Configuration import Config
 from dynamixel_sdk import *
-from xbot_msgs.msg import AX
+
+from xbot_driver.configuration import Config
+from xbot_driver.hardware_abstraction_layer import *
+from xbot_driver.motor_class import AX1xA
+
+import rospy
+from xbot_msgs.msg import AXState
 
 class XBotDriver():
     def __init__(self): 
         self.config = Config()
+        self.__init__dynamixel()
+        self.__init__rospy()
+
+    def __init__dynamixel(self):
         self.portHandler = PortHandler(self.config.device_name)
 
         # Open port
@@ -26,46 +33,53 @@ class XBotDriver():
             quit()
 
         # Initialise motors
-        self.motor_1 = AX1xA("motor_1", 1, self.portHandler)
-        self.motor_2 = AX1xA("motor_2", 2, self.portHandler)
-        self.motor_3 = AX1xA("motor_3", 3, self.portHandler)
-        self.motor_4 = AX1xA("motor_4", 4, self.portHandler)
+        self.motor_1 = AX1xA("joint_2", 1, self.portHandler)
+        self.motor_2 = AX1xA("joint_1", 2, self.portHandler)
+        self.motor_3 = AX1xA("joint_5", 3, self.portHandler)
+        self.motor_4 = AX1xA("joint_3", 4, self.portHandler)
         # self.motor_5 = AX1xA("motor_5", 5, self.portHandler)
-        self.motor_6 = AX1xA("motor_6", 6, self.portHandler)
+        self.motor_6 = AX1xA("joint_4", 6, self.portHandler)
 
-        self.motors = [self.motor_1, self.motor_2, self.motor_3, self.motor_4, self.motor_6]
+        self.motors = {2:self.motor_2, 1:self.motor_1, 4:self.motor_4, 6:self.motor_6, 3:self.motor_3}
 
-        for motor in self.motors:
-            motor.set_torque_mode(True)
-
-        rospy.init_node('xbot_driver')
-        self.state_publisher = rospy.Publisher('/motor_states', AX, queue_size=10)
-        self.set_position_subscriber = rospy.Subscriber('/set_position', AX, self.set_position_callback)
+    def __init__rospy(self):
+        node_name = 'xbot_driver'
+        rospy.init_node(node_name)
+        self.state_publisher = rospy.Publisher(f'/{node_name}/motor_states', AXState, queue_size=10)
+        self.cmd_state_subscriber = rospy.Subscriber(f'/{node_name}/cmd_state', AXState, self.cmd_state_callback)
         self.state_publish_rate = rospy.Rate(10)
 
-    def set_position_callback(self, msg):
-        for motor in self.motors:
-            if msg.ID == motor.ID and not motor.get_moving():
-                motor.set_moving_speed(msg.Moving_Speed)
-                motor.set_goal_position(msg.Goal_Position)
-                motor.set_led(msg.LED)
+    def cmd_state_callback(self, msg):
+        for i, ID in enumerate(msg.ID):
+            motor = self.motors[ID]
+            moving_speed = radian2uint10(msg.Moving_Speed[i])
+            goal_position = radian2uint10(msg.Goal_Position[i])
+            led_enabled = int(msg.LED[i])
+            torque_enabled = int(msg.Torque_Enable[i])
+            motor.set_moving_speed(moving_speed)
+            motor.set_goal_position(goal_position)
+            motor.set_led_enabled(led_enabled)
+            motor.set_torque_enabled(torque_enabled)
 
     def motor_state_update(self):
-        for motor in self.motors:
-            msg = AX()
-            id = motor.ID
-            present_position = motor.get_position()
-            moving = motor.get_moving()
-            msg.ID = id
-            msg.Present_Position = present_position
-            msg.Moving = moving
-            self.state_publisher.publish(msg)
+        msg = AXState()
+        for i, motor in enumerate(self.motors.values()):
+            msg.ID[i] = motor.ID
+            msg.LED[i] = motor.led_enabled
+            msg.Torque_Enable[i] = motor.torque_enabled
+            msg.Model_Number[i] = motor.model_number
+            msg.Baud_Rate[i] = motor.baude_rate
+            present_position = uint102radian(motor.get_position())
+            moving = bool(motor.get_moving_status())
+            msg.Present_Position[i] = present_position
+            msg.Moving[i] = moving
+        self.state_publisher.publish(msg)
         self.state_publish_rate.sleep()
 
     def main(self):
         print('Running')
         while not rospy.is_shutdown():
-            self.set_position_subscriber
+            self.cmd_state_subscriber
             self.motor_state_update()
     
 if __name__ == "__main__":
