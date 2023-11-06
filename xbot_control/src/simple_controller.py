@@ -76,6 +76,7 @@ class SimpleController():
     def find_move_time(self):
         dtheta_list = []
         for i, goal_position in enumerate(self.goal_positions_queue.query(0)):
+            # ISSUE: if the position is not the final position then it will not work i.e. multiple offsets added
             if i == 3 and self.store: #TODO-check clockwise or anti
                 goal_position += config.store_retrieve_offset
             elif i == 3 and not self.store:
