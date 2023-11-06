@@ -16,3 +16,8 @@ class Config():
         self.joint_ranges = [self.joint_1_range, self.joint_2_range, 
                              self.joint_3_range, self.joint_4_range,
                              self.joint_5_range]
+        
+        #TODO-obtain optimal value
+        self.store_retrieve_offset = 0.26 
+        #TODO-obtain optimal value
+        self.gravity_offset = 0.26

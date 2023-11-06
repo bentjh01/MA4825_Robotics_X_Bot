@@ -1,14 +1,15 @@
 import rospy
 from xbot_msgs.msg import AXState
 from sensor_msgs.msg import JointState
+from std_msgs.msg import String
 import sys
 from xbot_control.simple_controller_configuration import Config
 from xbot_control.controller_tools import FIFOQueue
 
 config = Config()
 #TODO-add flick offset when store or retrieve
-#TODO-add FIFO queue for goal msgs DONE
 #TODO-add option to add offset to compensate mechanical tilt
+#TODO-add a final pose signal so that controller may check to return to start
 class SimpleController():
     def __init__(self, reset):
         self.goal_positions_queue = FIFOQueue()
@@ -20,6 +21,7 @@ class SimpleController():
         self.joint_names = []
         self.__init__rospy()
         self.reset = reset
+        self.store = True
 
     def __init__rospy(self):
         node_name = 'xbot_simple_controller'
@@ -27,8 +29,16 @@ class SimpleController():
         rospy.init_node(node_name)
         self.motor_state_subscriber = rospy.Subscriber('/xbot_driver/motor_states', AXState, self.motor_state_callback)
         self.set_state_subscriber = rospy.Subscriber(f'/{inverse_kinematics_name}/goal_joint_states', JointState, self.set_state_callback)
+        self.store_retrieve_subscriber = rospy.Subscriber(f'UI_Topic', String, self.store_retrieve_callback) #TODO-get correct topic
         self.cmd_state_publisher = rospy.Publisher(f'{node_name}/cmd_state', AXState, queue_size=1)
         self.cmd_publish_rate = rospy.Rate(10)
+
+    def store_retrieve_callback(self, store_retrieve_msg): #TODO-to be verified
+        data = store_retrieve_msg.data
+        if 'Store' in data:
+            self.store = True
+        else:
+            self.store = False
 
     def motor_state_callback(self, ax_state_msg):
         current_positons = []
@@ -66,6 +76,10 @@ class SimpleController():
     def find_move_time(self):
         dtheta_list = []
         for i, goal_position in enumerate(self.goal_positions_queue.query(0)):
+            if i == 3 and self.store: #TODO-check clockwise or anti
+                goal_position += config.store_retrieve_offset
+            elif i == 3 and not self.store:
+                goal_position -= config.store_retrieve_offset
             dtheta = goal_position - self.current_positions[i]
             dtheta_list.append(dtheta)
         max_dtheta = max(dtheta_list)
