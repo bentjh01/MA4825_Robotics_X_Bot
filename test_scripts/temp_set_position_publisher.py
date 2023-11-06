@@ -37,7 +37,7 @@ def main():
     rospy.init_node('test')
     publisher = rospy.Publisher('/set_position', AX, queue_size=10)
     subsciber = rospy.Subscriber('/j_positions', String, callback)
-    subsciber_fake_controller = rospy.Subscriber('/move_group/fake_controller_joint_states', String, callback)
+    # subsciber_fake_controller = rospy.Subscriber('/move_group/fake_controller_joint_states', String, callback)
     motor_subscriber = rospy.Subscriber('/motor_states', AX, state_callback)
     rate = rospy.Rate(1)
     count = 0
