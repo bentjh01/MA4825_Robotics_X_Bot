@@ -11,21 +11,14 @@ function Homepage() {
         <h2>Home</h2>
       </div>
       <div className="card-body">
-        <div className="row py-4 justify-content-center">
-          <div className="col col-8 col-sm-4 col-md-3 text-center">
-            <Link to="/">
-              <button className="btn btn-primary btn-large w-100 py-3"><h4>Home</h4></button>
-            </Link>
-          </div>
-        </div>
-        <div className="row py-4 justify-content-center">
+        <div className="row py-5 justify-content-center">
           <div className="col col-8 col-sm-4 col-md-3 text-center">
             <Link to="/store-key">
               <button className="btn btn-primary btn-large w-100 py-3"><h4>Store Key</h4></button>
             </Link>
           </div>
         </div>
-        <div className="row py-4 justify-content-center">
+        <div className="row py-5 justify-content-center">
           <div className="col col-8 col-sm-4 col-md-3 text-center">
             <Link to="/retrieve-key">
               <button className="btn btn-primary btn-large w-100 py-3"><h4>Retrieve Key</h4></button>
