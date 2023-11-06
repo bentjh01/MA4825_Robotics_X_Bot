@@ -1,5 +1,7 @@
 ax_state
 
+string[] name
+
 uint16[] Model_Number
 uint8[]  Firmware_Version
 uint8[]  ID
