@@ -64,6 +64,7 @@ class XBotDriver():
     def motor_state_update(self):
         msg = AXState()
         for i, motor in enumerate(self.motors.values()):
+            msg.name[i] = motor.motor_name
             msg.ID[i] = motor.ID
             msg.LED[i] = motor.led_enabled
             msg.Torque_Enable[i] = motor.torque_enabled
