@@ -28,9 +28,11 @@ def callback(msg):
 
 def state_callback(msg):
     motor_moving = bool(msg.Moving)
+    current_position = msg.Moving_Speed
 
 def main():
-    global data_list, motor_moving
+    # 0.111 [rpm per 0x01]
+    global data_list, motor_moving, current_position
     data_list = [0, 0 , 0, 0 ,0]
     motor_moving = False
 
