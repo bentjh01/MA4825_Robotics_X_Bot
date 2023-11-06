@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/jetson/keyFetcher_ws/install/setup.sh

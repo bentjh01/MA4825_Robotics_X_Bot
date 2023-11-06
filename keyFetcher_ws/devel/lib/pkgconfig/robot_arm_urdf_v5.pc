@@ -1,0 +1,8 @@
+prefix=/home/jetson/keyFetcher_ws/devel
+
+Name: robot_arm_urdf_v5
+Description: Description of robot_arm_urdf_v5
+Version: 1.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

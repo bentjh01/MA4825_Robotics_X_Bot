@@ -1,10 +1,10 @@
 <package format="2">
-  <name>robot_arm_urdf_v5</name>
+  <name>xbot_description</name>
   <version>1.0.0</version>
   <description>
-    <p>URDF Description package for robot_arm_urdf_v5</p>
+    <p>URDF Description package for xbot_description</p>
     <p>This package contains configuration data, 3D models and launch files
-for robot_arm_urdf_v5 robot</p>
+for xbot_description robot</p>
   </description>
   <author>TODO</author>
   <maintainer email="TODO@email.com" />

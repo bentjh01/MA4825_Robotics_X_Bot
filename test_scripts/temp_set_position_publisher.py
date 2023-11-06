@@ -3,6 +3,7 @@ import rospy
 from xbot_msgs.msg import AX
 from sensor_msgs.msg import JointState
 from std_msgs.msg import String
+import sys
 
 ## ros moveit
 ##
@@ -42,6 +43,8 @@ def main():
     count = 0
     last_time = rospy.get_time()
     last_state = [0]
+    val = bool(int(sys.argv[-1]))
+    zero = val
     while not rospy.is_shutdown():
         msg_1 = AX()
         msg_2 = AX()
@@ -51,31 +54,36 @@ def main():
 
         msg_1.ID = 1
         msg_1.Goal_Position = rad2bit(data_list[1])
-        # msg_1.Goal_Position = 512
+        if zero:
+            msg_1.Goal_Position = 512
         msg_1.Moving_Speed = 64
         msg_1.LED = True
 
         msg_2.ID = 2
         msg_2.Goal_Position = rad2bit(data_list[0])
-        # msg_2.Goal_Position = 512
+        if zero:
+            msg_2.Goal_Position = 512
         msg_2.Moving_Speed = 64
         msg_1.LED = True
 
         msg_3.ID  = 3
         msg_3.Goal_Position = rad2bit(data_list[4])
-        # msg_3.Goal_Position = 512
+        if zero:
+            msg_3.Goal_Position = 512
         msg_3.Moving_Speed = 64
         msg_1.LED = True
 
         msg_4.ID  = 4
         msg_4.Goal_Position = rad2bit(data_list[2])
-        # msg_4.Goal_Position = 512
+        if zero:
+            msg_4.Goal_Position = 512
         msg_4.Moving_Speed = 64
         msg_1.LED = True
 
         msg_6.ID  = 6
         msg_6.Goal_Position = rad2bit(data_list[3])
-        # msg_6.Goal_Position = 512
+        if zero:
+            msg_6.Goal_Position = 512
         msg_6.Moving_Speed = 64
         msg_6.LED = True
 

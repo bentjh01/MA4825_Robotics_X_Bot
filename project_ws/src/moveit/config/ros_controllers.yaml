@@ -1,0 +1,6 @@
+robot_controller:
+  type: position_controllers/JointTrajectoryController
+  joints:
+    []
+  gains:
+    {}

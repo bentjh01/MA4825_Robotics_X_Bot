@@ -1,0 +1,8 @@
+prefix=/home/jetson/project_ws/install
+
+Name: robot_arm_jj_v4
+Description: Description of robot_arm_jj_v4
+Version: 1.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
