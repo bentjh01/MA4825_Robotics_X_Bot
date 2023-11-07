@@ -1,6 +1,6 @@
 from dynamixel_sdk import *
 
-from xbot_driver.configuration import Config
+from xbot_driver.src.xbot_driver.driver_configuration import Config
 from xbot_driver.hardware_abstraction_layer import *
 from xbot_driver.motor_class import AX1xA
 
