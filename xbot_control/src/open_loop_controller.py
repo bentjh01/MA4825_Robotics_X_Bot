@@ -3,7 +3,7 @@ from xbot_msgs.msg import AXState
 from sensor_msgs.msg import JointState
 import numpy as np
 
-class SimpleController():
+class OpenLoopController():
     def __init__(self, reset):
         reset_position = [0.,0.,0.,1.57,0.] # [rad]
         # Goal Trajectory
@@ -17,16 +17,15 @@ class SimpleController():
         # ROS
         self.__init__rospy()
         # Controller constraints
-        self.max_speed_limit = 1.0 # [rad/s]
-        self.min_speed_limit = 0.1 # [rad/s]
+        self.max_speed_limit = 1.111 # [rad/s]
+        self.min_speed_limit = 0.111 # [rad/s]
 
     def __init__rospy(self):
-        node_name = 'xbot_open_loop_controller'
-        inverse_kinematics_name = 'xbot_manual_kinematics'
-        rospy.init_node(node_name)
-        self.set_state_subscriber = rospy.Subscriber(f'/{inverse_kinematics_name}/goal_joint_states', JointState, self.set_state_callback)
-        self.cmd_state_publisher = rospy.Publisher(f'{node_name}/cmd_state', AXState, queue_size=1)
-        self.cmd_publish_rate = rospy.Rate(1)
+        rospy.init_node('xbot_open_loop_controller')
+        self.set_state_subscriber = rospy.Subscriber('/manual_kinematics/goal_joint_states', JointState, self.set_state_callback)
+        self.cmd_state_publisher = rospy.Publisher('/open_loop_controller/cmd_state', AXState, queue_size=1)
+        self.estimated_motor_state_publisher = rospy.Publisher('/estimated_motor_state', AXState, queue_size=1)
+        # self.estimated_motor_state_publish_rate = rospy.Rate()
 
     def set_state_callback(self, joint_state_msg):
         goal_positons = []
@@ -70,11 +69,18 @@ class SimpleController():
             self.estimate_motor_state(self.current_goal_positions)
             print(f'Published: \nPositions: {cmd_state_msg.Goal_Positon} \nSpeeds:{cmd_state_msg.Moving_Speed}')
 
+    def publish_motor_state(self):
+       estimated_motor_state_msg = AXState()
+       estimated_motor_state_msg.Present_Positon = self.estimated_current_positions 
+       estimated_motor_state_msg.Moving = [False, False, False, False, False]
+       self.estimated_motor_state_publisher.publish(estimated_motor_state_msg)
+
     def estimate_motor_state(self, goal_positions):
         time_elapsed = rospy.get_time() - self.cmd_sent_time
         if  time_elapsed >= self.estimated_travel_time:
             self.estimated_current_positions = goal_positions
             self.estimated_move_complete = True
+            self.publish_motor_state()
 
     def main(self):
         while not rospy.is_shutdown():
@@ -85,7 +91,7 @@ class SimpleController():
             self.publish_cmd_state()
 
 if __name__ == '__main__':
-    xBotSimpleController = SimpleController()
+    xBotSimpleController = OpenLoopController()
     xBotSimpleController.main()
 
 class FIFOQueue:
