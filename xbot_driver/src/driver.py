@@ -43,11 +43,12 @@ class XBotDriver():
         self.motors = {2:self.motor_2, 1:self.motor_1, 4:self.motor_4, 6:self.motor_6, 3:self.motor_3}
 
     def __init__rospy(self):
-        node_name = 'xbot_driver'
-        controller_name = 'xbot_simple_controller'
+        robot_name = rospy.get_param('/robot_name')
+        controller_name = rospy.get_param('/controller_name')
+        node_name = f'{robot_name}/driver'
         rospy.init_node(node_name)
-        self.state_publisher = rospy.Publisher(f'/{node_name}/motor_states', AXState, queue_size=10)
-        self.cmd_state_subscriber = rospy.Subscriber(f'/{controller_name}/cmd_state', AXState, self.cmd_state_callback)
+        self.state_publisher = rospy.Publisher(f'{node_name}/motor_states', AXState, queue_size=10)
+        self.cmd_state_subscriber = rospy.Subscriber(f'{controller_name}/cmd_state', AXState, self.cmd_state_callback)
         self.state_publish_rate = rospy.Rate(10)
 
     def cmd_state_callback(self, msg):

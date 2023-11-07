@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+
+  <param name="robot_name" value="my_robot" />
+
+  <node pkg="my_package" type="robot_name_publisher_node" name="robot_name_publisher">
+    <param name="robot_name" value="$(arg robot_name)" />
+  </node>
+
+  <node pkg="my_package" type="robot_controller_node" name="robot_controller">
+    <remap from="/robot_name" to="$(arg robot_name)" />
+  </node>
+
+</launch>

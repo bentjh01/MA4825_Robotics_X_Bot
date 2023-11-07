@@ -10,6 +10,7 @@ config = Config()
 #TODO-add flick offset when store or retrieve
 #TODO-add option to add offset to compensate mechanical tilt
 #TODO-add a final pose signal so that controller may check to return to start
+#TODO-addd feature to ommit speed control when the speed is given i.e. joint_state.velocity.is_empty()
 class SimpleController():
     def __init__(self, reset):
         self.goal_positions_queue = FIFOQueue()

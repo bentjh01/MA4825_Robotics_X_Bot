@@ -9,3 +9,8 @@ rosdep update
 
 sudo apt install python3-catkin-tools
 ```
+
+```
+ikfast is supposed to give a file that is like a lookup table for coordinates in the action space
+thus faster solutions
+```

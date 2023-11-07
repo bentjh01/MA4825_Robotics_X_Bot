@@ -1,5 +1,6 @@
 from dynamixel_sdk import *
 from xbot_driver.driver_configuration import Config
+
 config  = Config()
 
 class AX1xA:
@@ -21,7 +22,7 @@ class AX1xA:
         self.reduction_ratio = 254 
         self.stall_torque = 1.5 # [Nm]
         self.protocol_version = 1.0
-        self.max_position = 1023
+        self.max_position = 1023 # uint10
         self.position_resolution_deg = 0.29 # [deg/ count]
         self.half_position_range_deg = 148.19 # [deg]
         self.speed_resolution_rpm = 0.111 # [rpm/count]
@@ -85,7 +86,7 @@ class AX1xA:
         # self.ccw_compliance_margin = 
         # self.cw_compliance_slope = 
         # self.ccw_compliance_slope = 
-        self.goal_position = 0
+        self.goal_position = 512
         self.moving_speed = 64
         # self.torque_limit = 
         self.present_position = self.get_position()
@@ -104,21 +105,21 @@ class AX1xA:
         self.goal_position = goal_position
         dxl_comm_result, dxl_error = self.packetHandler.write2ByteTxRx(self.portHandler, self.ID, self.goal_position_address, self.goal_position)
         if dxl_comm_result != 0:
-            print("FAILED %s" % self.packetHandler.getTxRxResult(dxl_comm_result))
+            print(f'FAILED to set_goal_position = {goal_position} {self.packetHandler.getTxRxResult(dxl_comm_result)}')
         elif dxl_error != 0:
-            print("FAILED %s" % self.packetHandler.getRxPacketError(dxl_error))
+            print(f'FAILED to set_goal_position = {goal_position} {self.packetHandler.getRxPacketError(dxl_error)}')
         else:
             print(f"SUCCESS Change goal position to {self.goal_position}")
             
-    def set_moving_speed(self, moving_speed = 128):
+    def set_moving_speed(self, moving_speed):
         if moving_speed == self.moving_speed:
             return
         self.moving_speed = moving_speed
         dxl_comm_result, dxl_error = self.packetHandler.write2ByteTxRx(self.portHandler, self.ID, self.moving_speed_address, self.moving_speed)
         if dxl_comm_result != 0:
-            print("FAILED %s" % self.packetHandler.getTxRxResult(dxl_comm_result))
+            print(f'FAILED to set moving_speed = {moving_speed} {self.packetHandler.getTxRxResult(dxl_comm_result)}')
         elif dxl_error != 0:
-            print("FAILED %s" % self.packetHandler.getRxPacketError(dxl_error))
+            print(f'FAILED to set moving_speed = {moving_speed} {self.packetHandler.getRxPacketError(dxl_error)}')
         else:
             print(f"SUCCESS Change moving speed to {self.moving_speed}")
 
@@ -128,9 +129,9 @@ class AX1xA:
         self.torque_enabled = torque_enabled
         dxl_comm_result, dxl_error = self.packetHandler.write1ByteTxRx(self.portHandler, self.ID, self.torque_enabled_address, self.torque_enabled)
         if dxl_comm_result != 0:
-            print("FAILED %s" % self.packetHandler.getTxRxResult(dxl_comm_result))
+            print(f'FAILED to set torque_enabled = {torque_enabled} {self.packetHandler.getTxRxResult(dxl_comm_result)}')
         elif dxl_error != 0:
-            print("FAILED %s" % self.packetHandler.getRxPacketError(dxl_error))
+            print(f'FAILED to set torque_enabled = {torque_enabled} {self.packetHandler.getRxPacketError(dxl_error)}')
         else:
             print(f"SUCCESS Change torque enabled to {self.torque_enabled}")
 
@@ -140,9 +141,9 @@ class AX1xA:
         self.led_enabled = led_enabled
         dxl_comm_result, dxl_error = self.packetHandler.write1ByteTxRx(self.portHandler, self.ID, self.led_address, self.led_enabled)
         if dxl_comm_result != 0:
-            print("FAILED %s" % self.packetHandler.getTxRxResult(dxl_comm_result))
+            print(f'FAILED to set torque_enabled = {led_enabled} {self.packetHandler.getTxRxResult(dxl_comm_result)}')
         elif dxl_error != 0:
-            print("FAILED %s" % self.packetHandler.getRxPacketError(dxl_error))
+            print(f'FAILED to set torque_enabled = {led_enabled} {self.packetHandler.getRxPacketError(dxl_error)}')
         else:
             print(f"SUCCESS Change LED enabled to {self.led_enabled}")
 

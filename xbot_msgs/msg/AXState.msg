@@ -1,5 +1,3 @@
-ax_state
-
 string[] name
 
 uint16[] Model_Number
@@ -23,14 +21,14 @@ uint8[]  CW_Compliance_Margin
 uint8[]  CCW_Compliance_Margin
 uint8[]  CW_Compliance_Slope
 uint8[]  CCW_Compliance_Slope
-float[] Goal_Position
-float[] Moving_Speed
-float[] Torque_Limit
-float[] Present_Position
-float[] Present_Speed
-float[] Present_Load
-float[]  Present_Voltage
-float[]  Present_Temperature
+float32[] Goal_Position
+float32[] Moving_Speed
+float32[] Torque_Limit
+float32[] Present_Position
+float32[] Present_Speed
+float32[] Present_Load
+float32[]  Present_Voltage
+float32[]  Present_Temperature
 uint8[]  Registered
 bool[]  Moving
 uint8[]  Lock

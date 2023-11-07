@@ -77,3 +77,78 @@ return plan, fraction
 move_group.execute(plan, wait=True)
 
 ###########################################
+
+import rospy
+from sensor_msgs.msg import JointStates
+from geometry_msgs.msg import Pose
+from std_msgs.msg import String
+
+#TODO: Add the joint positions for each locker number here
+#TODO: Implement feedback to system so that the arm doesnt execute a store when it supposed to retrieve
+
+class ManualKinematics():
+    def __init__(self):
+        self.id_2_plan_map = {
+            1:[], 2:[], 3:[],
+            4:[], 5:[], 6:[],
+            7:[], 8:[], 9:[]
+        }
+        self.generate_id_2_plan_map()
+        self.locker_id = None
+        self.store = None 
+        self.ready = False
+        self.__init__rospy()
+
+    def __init__rospy(self):
+        node_name = 'manual_kinematics'
+        self.set_states_publisher = rospy.Publisher(f'/{node_name}/goal_plan', JointStates, queue_size = 10)
+        # self.goal_pose_subcriber = rospy.Subsciber('xbot_ui/goal_pose', Pose, self.goal_pose_callback)
+        self.store_retrieve_subscriber = rospy.Subscriber(f'UI_Topic', String, self.store_retrieve_callback) #TODO-get correct topic
+        self.set_states_publish_rate = rospy.Rate(10)
+
+    # def goal_pose_callback(self, goal_pose_msg):
+    #     self.goal_pose = goal_pose_msg
+        # pose_x = goal_pose_msg.position.x
+        # pose_y = goal_pose_msg.position.y
+        # pose_z = goal_pose_msg.position.z
+        # orientation_x = goal_pose_msg.orientation.x
+        # orientation_y = goal_pose_msg.orientation.y
+        # orientation_z = goal_pose_msg.orientation.z
+        # orientation_w = goal_pose_msg.orientation.w
+
+    def solve(self):
+        self.plan_msg = self.id_2_plan_map[self.locker_id]
+
+    def store_retrieve_callback(self, store_retrieve_msg):
+        data = store_retrieve_msg.data
+        if 'Store' in data:
+            self.store = True
+        else:
+            self.store = False
+        self.locker_id = int(data[0])
+        self.solve()
+        self.ready = True
+
+    def generate_id_2_plan_map(self):
+        for key in self.id_2_plan_map.keys():
+            joint_state = JointStates()
+            for i in range(5):
+                joint_state.name[i] = f'joint_{i+1}'
+            joint_state.position = self.id_2_plan_map[key]
+            self.id_2_plan_map[key] = joint_state
+
+    def set_state_publish(self):
+        # for i in range(5):
+        #     set_state.name[i] = f'joint_{i+1}'
+        #     set_state.position[i] = None
+        self.set_states_publisher.publish(self.plan_msg)
+        self.set_states_publish_rate.sleep()
+
+    def main(self):
+        while not rospy.is_shutdown():
+            self.goal_pose_subcriber 
+            self.store_retrieve_subscriber
+            while not self.ready:
+                continue
+            self.set_state_publish()
+            self.ready = False
