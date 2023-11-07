@@ -32,8 +32,8 @@ def angular_speed_to_byte(angular_speed):
 class Motor():
     def __init__(self, ID):
         self.ID = ID
-        self.goal_position = 512
-        self.current_position = 512
+        self.goal_position = 0
+        self.current_position = 0
         self.move_complete = True # zero == completed
         self.speed = 64
 
@@ -46,6 +46,7 @@ def callback(msg):
     m6.goal_position = float(data[3])
     m3.goal_position = float(data[4])
     ready = True
+    print(f'{ready}')
 
 def state_callback(msg):
     global m1, m2, m3, m4, m6
@@ -67,6 +68,7 @@ def state_callback(msg):
 
 def prepare_move_motors():
     t = 5 # time to reach goal
+    print('sending')
     global m1, m2, m3, m4, m6
     dtheta_list = [0, 0, 0, 0, 0]
     dtheta_list[0] = m2.goal_position - m2.current_position
@@ -106,45 +108,39 @@ def main():
     msg_6 = AX()
     msg_6.ID = 6
     zero = bool(int(sys.argv[-1]))
+    print(f'{zero}')
     while not rospy.is_shutdown():
+
         subsciber
         motor_subscriber
         rate.sleep()
-
+        print('waiting')
+        
         if not ready:
             continue
 
         prepare_move_motors()
 
+        print(rad2bit(m1.goal_position))
         msg_1.Goal_Position = rad2bit(m1.goal_position)
-        if zero:
-            msg_1.Goal_Position = 512
         msg_1.Moving_Speed = angular_speed_to_byte(m1.speed)
-        msg_1.LED = True
+        msg_1.LED = 1 
 
         msg_2.Goal_Position = rad2bit(m2.goal_position)
-        if zero:
-            msg_2.Goal_Position = 512
         msg_2.Moving_Speed = angular_speed_to_byte(m2.speed)
-        msg_2.LED = True
+        msg_2.LED = 1
 
         msg_3.Goal_Position = rad2bit(m3.goal_position)
-        if zero:
-            msg_3.Goal_Position = 512
         msg_3.Moving_Speed = angular_speed_to_byte(m3.speed)
-        msg_3.LED = True
+        msg_3.LED = 1
 
         msg_4.Goal_Position = rad2bit(m4.goal_position)
-        if zero:
-            msg_4.Goal_Position = 512
         msg_4.Moving_Speed = angular_speed_to_byte(m4.speed)
-        msg_4.LED = True
+        msg_4.LED = 1
 
         msg_6.Goal_Position = rad2bit(m6.goal_position)
-        if zero:
-            msg_6.Goal_Position = 512
         msg_6.Moving_Speed = angular_speed_to_byte(m6.speed)
-        msg_6.LED = True
+        msg_6.LED = 1 
 
         publisher.publish(msg_1)
         publisher.publish(msg_2)
