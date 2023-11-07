@@ -3,7 +3,8 @@
 import rospy
 import moveit_commander
 from moveit_commander import PlanningSceneInterface
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import Pose
+from sensor_msgs.msg import JointState
 
 def main():
     rospy.init_node('my_robot_control', anonymous=True)
@@ -18,7 +19,7 @@ def main():
     # Set the target pose
     # move_group.set_random_target()
 
-    target_pose = PoseStamped()
+    target_pose = Pose()
     target_pose.pose.position.x = -0.11  # 设置 x 坐标
     target_pose.pose.position.y = -0.15  # 设置 y 坐标
     target_pose.pose.position.z = -0.068  # 设置 z 坐标
