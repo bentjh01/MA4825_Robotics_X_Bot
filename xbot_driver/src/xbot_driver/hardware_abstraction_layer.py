@@ -1,8 +1,12 @@
 from dynamixel_sdk import *
-from xbot_driver.driver_configuration import Config
 
+class Config:
+    def __init__(self):
+        self.set_position_topic = "set_position"
+        self.baude_rate = 1000000
+        self.device_name = '/dev/ttyUSB0'
+        self.protocol_version = 1.0
 config  = Config()
-
 class AX1xA:
     # https://emanual.robotis.com/docs/en/dxl/ax/ax-12a/
     # https://emanual.robotis.com/docs/en/dxl/ax/ax-18a/
@@ -65,10 +69,10 @@ class AX1xA:
         self.punch_address = 48
 
     def parameter(self):
-        self.model_number = self.get_model_number()
+        # self.model_number = self.get_model_number()
         # self.firmware_version = 
         # self.ID = 
-        self.baude_rate = self.get_baude_rate()
+        # self.baude_rate = self.get_baude_rate()
         # self.return_delay_time =
         # self.cw_angle_limit = 0
         # self.ccw_angle_limit = 0
@@ -86,21 +90,22 @@ class AX1xA:
         # self.ccw_compliance_margin = 
         # self.cw_compliance_slope = 
         # self.ccw_compliance_slope = 
-        self.goal_position = 512
-        self.moving_speed = 64
+        self.goal_position = None
+        self.moving_speed = None
         # self.torque_limit = 
-        self.present_position = self.get_position()
+        # self.present_position = self.get_position()
         # self.present_speed = 
         # self.present_load = 
         # self.present_volatage = 
         # self.present_temperature = 
         # self.registered = 
-        self.moving_status = self.get_moving_status()
+        # self.moving_status = self.get_moving_status()
         # self.lock = 
         # self.punch = 
 
     def set_goal_position(self, goal_position):
         if goal_position == self.goal_position:
+            print('no change in set_goal')
             return
         self.goal_position = goal_position
         dxl_comm_result, dxl_error = self.packetHandler.write2ByteTxRx(self.portHandler, self.ID, self.goal_position_address, self.goal_position)
@@ -113,6 +118,7 @@ class AX1xA:
             
     def set_moving_speed(self, moving_speed):
         if moving_speed == self.moving_speed:
+            print('no change in move_speed')
             return
         self.moving_speed = moving_speed
         dxl_comm_result, dxl_error = self.packetHandler.write2ByteTxRx(self.portHandler, self.ID, self.moving_speed_address, self.moving_speed)
@@ -147,25 +153,25 @@ class AX1xA:
     #     else:
     #         print(f"SUCCESS Change LED enabled to {self.led_enabled}")
 
-    # def get_position(self):
-    #     dxl_present_position, dxl_comm_result, dxl_error = self.packetHandler.read2ByteTxRx(self.portHandler, self.ID, self.present_position_address)
-    #     if dxl_comm_result != 0:
-    #         print("FAILED %s" % self.packetHandler.getTxRxResult(dxl_comm_result))
-    #     elif dxl_error != 0:
-    #         print("FAILED %s" % self.packetHandler.getRxPacketError(dxl_error))
-    #     else:
-    #         self.present_position = dxl_present_position
-    #         return dxl_present_position
+    def get_position(self):
+        dxl_present_position, dxl_comm_result, dxl_error = self.packetHandler.read2ByteTxRx(self.portHandler, self.ID, self.present_position_address)
+        if dxl_comm_result != 0:
+            print("FAILED %s" % self.packetHandler.getTxRxResult(dxl_comm_result))
+        elif dxl_error != 0:
+            print("FAILED %s" % self.packetHandler.getRxPacketError(dxl_error))
+        else:
+            self.present_position = dxl_present_position
+            return dxl_present_position
     
-    # def get_moving_status(self):
-    #     dxl_moving_status, dxl_comm_result, dxl_error = self.packetHandler.read1ByteTxRx(self.portHandler, self.ID, self.moving_status_address)
-    #     if dxl_comm_result != 0:
-    #         print("FAILED %s" % self.packetHandler.getTxRxResult(dxl_comm_result))
-    #     elif dxl_error != 0:
-    #         print("FAILED %s" % self.packetHandler.getRxPacketError(dxl_error))
-    #     else:
-    #         self.moving_status = dxl_moving_status
-    #         return dxl_moving_status
+    def get_moving_status(self):
+        dxl_moving_status, dxl_comm_result, dxl_error = self.packetHandler.read1ByteTxRx(self.portHandler, self.ID, self.moving_status_address)
+        if dxl_comm_result != 0:
+            print("FAILED %s" % self.packetHandler.getTxRxResult(dxl_comm_result))
+        elif dxl_error != 0:
+            print("FAILED %s" % self.packetHandler.getRxPacketError(dxl_error))
+        else:
+            self.moving_status = dxl_moving_status
+            return dxl_moving_status
     
     # def get_baude_rate(self):
     #     dxl_baude_rate, dxl_comm_result, dxl_error = self.packetHandler.read1ByteTxRx(self.portHandler, self.ID, self.baude_rate_address)
@@ -209,7 +215,7 @@ def radian_second__2__rpm(radian_second):
 
 def radian2uint10(radian):
     degree = radian__2__degree(radian)
-    uint10 = round(degree/0.29297)
+    uint10 = np.interp(degree, [-150,149.71], [0, 1024])
     return int(uint10)
 
 def uint102radian(uint10):
@@ -218,7 +224,9 @@ def uint102radian(uint10):
     return float(radian)
 
 def radian_second2uint10(radian_second):
-    rpm = rpm__2__radian_second(radian_second)
+    if radian_second is None:
+        return 0.01
+    rpm = radian_second__2__rpm(radian_second)
     uint10 = round(rpm/0.111)
     return int(uint10)
 

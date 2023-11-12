@@ -1,6 +1,6 @@
 from dynamixel_sdk import *
 
-from xbot_driver.src.xbot_driver.driver_configuration import Config
+# from xbot_driver.driver_configuration import Config
 from xbot_driver.hardware_abstraction_layer import *
 
 import rospy
@@ -46,10 +46,22 @@ class XBotDriver():
     def __init__rospy(self):
         rospy.init_node('xbot_driver')
         self.cmd_state_subscriber = rospy.Subscriber('/open_loop_controller/cmd_state', AXState, self.cmd_state_callback)
-        self.state_publish_rate = rospy.Rate(10)
+        self.state_publisher = rospy.Publisher('/driver/motor_states', AXState, queue_size= 10)
+        self.state_publish_rate = rospy.Rate(5)
+        # self.timer_ = rospy.timer()
+
+    def publish_state(self):
+        motor_state_msg = AXState()
+        for i, motor in enumerate(self.motors):
+            motor_state_msg.Present_Position.append(uint102radian(motor.get_position()))
+            motor_state_msg.Moving.append(bool(motor.get_moving_status()))
+            motor_state_msg.Goal_Position.append(uint102radian(motor.goal_position))
+            motor_state_msg.Moving_Speed.append(uint102radian(motor.moving_speed))
+        self.state_publisher.publish(motor_state_msg)
+        self.state_publish_rate.sleep()
 
     def cmd_state_callback(self, msg):
-        for i, motor in self.motors:
+        for i, motor in enumerate(self.motors):
             moving_speed = radian_second2uint10(msg.Moving_Speed[i])
             goal_position = radian2uint10(msg.Goal_Position[i])
             motor.set_moving_speed(moving_speed)
@@ -59,6 +71,7 @@ class XBotDriver():
         print('Running')
         while not rospy.is_shutdown():
             self.cmd_state_subscriber
+            self.publish_state()
     
 if __name__ == "__main__":
     xBotDriver = XBotDriver()
