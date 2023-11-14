@@ -1,2 +1,0 @@
-moveit:robot_arm_jj_v4
--DCATKIN_DEVEL_PREFIX=/home/jetson/project_ws/devel -DCMAKE_INSTALL_PREFIX=/home/jetson/project_ws/install -G Unix Makefiles
