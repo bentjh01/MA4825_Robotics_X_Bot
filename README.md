@@ -15,8 +15,9 @@ This repo is for the course project MA4825 Robotics
 `rosrun xbot_driver driver.py`
 11. Starting controller  
 `python3 src/MA4825_Robotics_X_Bot/xbot_control/src/open_loop_controller.py`
-13. Starting Kinematics  
-`python3 src/MA4825_Robotics_X_Bot/xbot_kinematics/src/manual_kinematics.py`
+13. Starting Kinematics
+`roslaunch moveit demo.launch`
+`python3 src/MA4825_Robotics_X_Bot/xbot_kinematics/src/inverse_kinematics.py`
 15. Receiving data from sensors  
 `rosrun xbot_sensors limit_switch.py`
 
