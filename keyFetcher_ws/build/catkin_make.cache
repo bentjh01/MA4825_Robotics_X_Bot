@@ -1,2 +1,0 @@
-arm_control:arm_launch:moveit_cfg:robot_arm_urdf_v5
--DCATKIN_DEVEL_PREFIX=/home/jetson/keyFetcher_ws/devel -DCMAKE_INSTALL_PREFIX=/home/jetson/keyFetcher_ws/install -G Unix Makefiles
