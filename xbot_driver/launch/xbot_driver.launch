@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+
+  <param name="xbot_driver_path" value="$(find xbot_drivers)/src/driver.py" />
+
+  <node pkg="xbot_driver" type="xbot_driver_node" name="xbot_driver">
+    <param name="/robot_name" value="/xbot"/>
+    <param name="/controller_name" value="/xbot/simple_controller"/>
+  </node>
+
+</launch>

@@ -1,12 +1,18 @@
-import rospy
-from xbot_driver.MotorClass import AX1xA
-from xbot_driver.Configuration import Config
 from dynamixel_sdk import *
-from xbot_msgs.msg import AX
+
+# from xbot_driver.driver_configuration import Config
+from xbot_driver.hardware_abstraction_layer import *
+
+import rospy
+from xbot_msgs.msg import AXState
 
 class XBotDriver():
     def __init__(self): 
         self.config = Config()
+        self.__init__dynamixel()
+        self.__init__rospy()
+
+    def __init__dynamixel(self):
         self.portHandler = PortHandler(self.config.device_name)
 
         # Open port
@@ -26,47 +32,46 @@ class XBotDriver():
             quit()
 
         # Initialise motors
-        self.motor_1 = AX1xA("motor_1", 1, self.portHandler)
-        self.motor_2 = AX1xA("motor_2", 2, self.portHandler)
-        self.motor_3 = AX1xA("motor_3", 3, self.portHandler)
-        self.motor_4 = AX1xA("motor_4", 4, self.portHandler)
-        # self.motor_5 = AX1xA("motor_5", 5, self.portHandler)
-        self.motor_6 = AX1xA("motor_6", 6, self.portHandler)
+        self.motor_1 = AX1xA("joint_2", 1, self.portHandler)
+        self.motor_2 = AX1xA("joint_1", 2, self.portHandler)
+        self.motor_3 = AX1xA("joint_5", 3, self.portHandler)
+        self.motor_4 = AX1xA("joint_3", 4, self.portHandler)
+        self.motor_6 = AX1xA("joint_4", 6, self.portHandler)
 
-        self.motors = [self.motor_1, self.motor_2, self.motor_3, self.motor_4, self.motor_6]
+        self.motors = [self.motor_2, self.motor_1, self.motor_4, self.motor_6, self.motor_3]
 
         for motor in self.motors:
-            motor.set_torque_mode(True)
+            motor.set_torque_enabled(1)
 
+    def __init__rospy(self):
         rospy.init_node('xbot_driver')
-        self.state_publisher = rospy.Publisher('/motor_states', AX, queue_size=10)
-        self.set_position_subscriber = rospy.Subscriber('/set_position', AX, self.set_position_callback)
-        self.state_publish_rate = rospy.Rate(10)
+        self.cmd_state_subscriber = rospy.Subscriber('/cmd_state', AXState, self.cmd_state_callback)
+        self.state_publisher = rospy.Publisher('/driver/motor_states', AXState, queue_size= 10)
+        self.state_publish_rate = rospy.Rate(5)
+        # self.timer_ = rospy.timer()
 
-    def set_position_callback(self, msg):
-        for motor in self.motors:
-            if msg.ID == motor.ID and not motor.get_moving():
-                motor.set_moving_speed(msg.Moving_Speed)
-                motor.set_goal_position(msg.Goal_Position)
-                motor.set_led(msg.LED)
-
-    def motor_state_update(self):
-        for motor in self.motors:
-            msg = AX()
-            id = motor.ID
-            present_position = motor.get_position()
-            moving = motor.get_moving()
-            msg.ID = id
-            msg.Present_Position = present_position
-            msg.Moving = moving
-            self.state_publisher.publish(msg)
+    def publish_state(self):
+        motor_state_msg = AXState()
+        for i, motor in enumerate(self.motors):
+            motor_state_msg.Present_Position.append(uint102radian(motor.get_position()))
+            motor_state_msg.Moving.append(bool(motor.get_moving_status()))
+            motor_state_msg.Goal_Position.append(uint102radian(motor.goal_position))
+            motor_state_msg.Moving_Speed.append(uint102radian(motor.moving_speed))
+        self.state_publisher.publish(motor_state_msg)
         self.state_publish_rate.sleep()
+
+    def cmd_state_callback(self, msg):
+        for i, motor in enumerate(self.motors):
+            moving_speed = radian_second2uint10(msg.Moving_Speed[i])
+            goal_position = radian2uint10(msg.Goal_Position[i])
+            motor.set_moving_speed(moving_speed)
+            motor.set_goal_position(goal_position)
 
     def main(self):
         print('Running')
         while not rospy.is_shutdown():
-            self.set_position_subscriber
-            self.motor_state_update()
+            self.cmd_state_subscriber
+            self.publish_state()
     
 if __name__ == "__main__":
     xBotDriver = XBotDriver()
