@@ -45,7 +45,7 @@ class XBotDriver():
 
     def __init__rospy(self):
         rospy.init_node('xbot_driver')
-        self.cmd_state_subscriber = rospy.Subscriber('/open_loop_controller/cmd_state', AXState, self.cmd_state_callback)
+        self.cmd_state_subscriber = rospy.Subscriber('/cmd_state', AXState, self.cmd_state_callback)
         self.state_publisher = rospy.Publisher('/driver/motor_states', AXState, queue_size= 10)
         self.state_publish_rate = rospy.Rate(5)
         # self.timer_ = rospy.timer()

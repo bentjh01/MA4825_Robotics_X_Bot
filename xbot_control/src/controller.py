@@ -28,7 +28,7 @@ class FIFOQueue:
   def __len__(self):
     return len(self._items)
 
-class OpenLoopController():
+class Controller():
     def __init__(self):
         reset_position = [0.,0.,0.,1.57,0.] # [rad]
         # Goal Trajectory
@@ -47,8 +47,8 @@ class OpenLoopController():
 
     def __init__rospy(self):
         rospy.init_node('xbot_open_loop_controller')
-        self.set_state_subscriber = rospy.Subscriber('/manual_kinematics/goal_joint_states', JointState, self.set_state_callback)
-        self.cmd_state_publisher = rospy.Publisher('/open_loop_controller/cmd_state', AXState, queue_size=1)
+        self.set_state_subscriber = rospy.Subscriber('/goal_joint_states', JointState, self.set_state_callback)
+        self.cmd_state_publisher = rospy.Publisher('/cmd_state', AXState, queue_size=1)
         self.estimated_motor_state_publisher = rospy.Publisher('/estimated_motor_state', AXState, queue_size=1)
         # self.estimated_motor_state_publish_rate = rospy.Rate()
 
@@ -123,5 +123,5 @@ class OpenLoopController():
             self.publish_cmd_state()
 
 if __name__ == '__main__':
-    xBotSimpleController = OpenLoopController()
+    xBotSimpleController = Controller()
     xBotSimpleController.main()

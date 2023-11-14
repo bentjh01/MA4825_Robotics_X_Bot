@@ -42,7 +42,7 @@ class ManualKinematics():
         self.current_state = JointState()
         
     def __init__rospy(self):
-        rospy.init_node('moveit')
+        rospy.init_node('xbot_kinematics')
         self.set_states_publisher = rospy.Publisher('/manual_kinematics/goal_joint_states', JointState, queue_size = 1)
         self.locker_id_subscriber = rospy.Subscriber('/ui', String, self.locker_id_callback)
         self.limit_switch_subsciber = rospy.Subscriber('/limit_switch', Bool, self.limit_switch_callback)
