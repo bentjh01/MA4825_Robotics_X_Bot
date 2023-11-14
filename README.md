@@ -35,4 +35,6 @@ This repo is for the course project MA4825 Robotics
 - [ROBOTIS Dynamixel SDK eManual](https://emanual.robotis.com/docs/en/software/dynamixel/dynamixel_sdk/)
 - [GitHub Dynamixel SDK](https://github.com/ROBOTIS-GIT/DynamixelSDK.git)  
 \$ `sudo apt install ros-noetic-dynamixel-sdk`
+#### Moveit
+- [ROS MoveIt Tutorials](https://ros-planning.github.io/moveit_tutorials/)
 
