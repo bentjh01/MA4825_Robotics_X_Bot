@@ -1,4 +1,3 @@
-
 import rospy
 from std_msgs.msg import Bool
 import Jetson.GPIO as GPIO
