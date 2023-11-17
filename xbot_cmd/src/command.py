@@ -16,10 +16,13 @@ class UI2XBOT:
         self.limit_switch_subsciber = rospy.Subscriber('/limit_switch', Bool, self.limit_switch_callback)
         self.motor_state_subsciber = rospy.Subscriber('/driver/motor_states', AXState, self.motor_state__callback)
         # x: arm to board, y: left right, z: top and bottom
+        unit_fwd = -0.236
+        unit_hor = 0.10
+        unit_ver = 0.065
         self.locker_coordinates = {
-            1:[unit_fwd, -unit_hor, unit_ver],  2:[unit_fwd, 0, unit_ver],  3:[unit_fwd, unit_hor, unit_ver],
-            4:[unit_fwd, -unit_hor, 0],         5:[unit_fwd, 0, 0],         6:[unit_fwd, unit_hor, 0],
-            7:[unit_fwd, -unit_hor, -unit_ver], 8:[unit_fwd, 0, -unit_ver], 9:[unit_fwd, unit_hor, -unit_ver]
+            1:[unit_fwd, -unit_hor, 0.15+ unit_ver], 3:[unit_fwd, unit_hor, 0.15 + unit_ver],
+                                5:[unit_fwd, 0.0, 0.15],
+            7:[unit_fwd, -unit_hor, 0.15-unit_ver], 9:[unit_fwd, unit_hor, 0.15-unit_ver]
         }
         self.collection_pose = Pose()
         self.collection_pose.position.x = 0.1
