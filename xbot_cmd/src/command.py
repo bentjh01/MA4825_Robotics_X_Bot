@@ -2,8 +2,8 @@ import rospy
 # import message_filters
 from std_msgs.msg import String
 from std_msgs.msg import Bool
-from geometry_msgs.msg import Pose 
-from xbot_msgs.msg import AXState
+from geometry_msgs.msg import Point 
+from xbot_msgs.msg import pose_action
 
 unit_hor = 10
 unit_ver = 10
@@ -11,90 +11,62 @@ unit_fwd = 20
 
 class UI2XBOT:
     def __init__(self):
-        self.goal_talker = rospy.Publisher('/goal_pose', Pose)
-        self.locker_id_subscriber = rospy.Subscriber('/ui', String, self.locker_id_callback)
-        self.limit_switch_subsciber = rospy.Subscriber('/limit_switch', Bool, self.limit_switch_callback)
-        self.motor_state_subsciber = rospy.Subscriber('/driver/motor_states', AXState, self.motor_state__callback)
+        self.goal_talker = rospy.Publisher('/goal', Point)
+        self.action_talker = rospy.Publisher('/key_action', Bool)
         # x: arm to board, y: left right, z: top and bottom
         self.locker_coordinates = {
             1:[unit_fwd, -unit_hor, unit_ver],  2:[unit_fwd, 0, unit_ver],  3:[unit_fwd, unit_hor, unit_ver],
             4:[unit_fwd, -unit_hor, 0],         5:[unit_fwd, 0, 0],         6:[unit_fwd, unit_hor, 0],
             7:[unit_fwd, -unit_hor, -unit_ver], 8:[unit_fwd, 0, -unit_ver], 9:[unit_fwd, unit_hor, -unit_ver]
         }
-        self.collection_pose = Pose()
-        self.collection_pose.position.x = 0.1
-        self.collection_pose.position.y = -0.1
-        self.collection_pose.position.z = 0.15
-
-        self.rest_pose = Pose()
-        self.rest_pose.position.x = 0.0
-        self.rest_pose.position.y = -0.13
-        self.rest_pose.position.z = 0.3
-
-        self.motor_states = []
-        self.joint_states = []
-        self.motor_ready = False
-        self.limit_switch_pressed = True
-        self.arm_state = 0 # 0:waiting for locker id, 1: at item, 2: collected item, 4: go to collection Pose, 5: waiting for collection, 
-        self.goal_pose = Pose()
- 
     
-    def locker_id_callback(self, msg):
-        data = msg.data
-        locker_id = int(data[0])
-        self.goal_pose.position.x = self.locker_coordinates[locker_id][0]
-        self.goal_pose.position.y = self.locker_coordinates[locker_id][1]
-        self.goal_pose.position.z = self.locker_coordinates[locker_id][2]
+    def callback(self, msg):
+        str_data = str(msg.data)
+        locker_id = int(str_data[0])
+        action = str_data[1:]
 
-    def motor_state__callback(self, motor_status_msg):
-        self.joint_states = motor_status_msg.Present_Position
-        self.motor_states = motor_status_msg.Moving
-        self.motor_ready = True
-        for motor_state in self.motor_states:
-            if motor_state:
-                self.motor_ready = False
-                break
+        goal = Point()
+        goal.x = self.locker_coordinates[locker_id][0]
+        goal.y = self.locker_coordinates[locker_id][1]
+        goal.z = self.locker_coordinates[locker_id][2]
 
-    def limit_switch_callback(self, limit_switch_msg):
-        data = limit_switch_msg.data
-        self.limit_switch_pressed = True
-        if data:
-            self.limit_switch_pressed = False
+        if action == 'store':
+            self.action = True
+        elif action == 'retrieve':
+            self.action = False
+
+        self.goal_talker.pub(goal)
+        self.action_talker.pub(action)
 
     def run(self):
-        while not rospy.is_shutdown():
-            self.locker_id_subscriber
-            self.limit_switch_subsciber 
-            self.motor_state_subsciber
+        rospy.Subscriber('/ui', String, self.callback)
+        rospy.spin()
 
-            if self.arm_state ==0: 
-                # arm is at reset state
-                if self.motor_ready and not self.limit_switch_pressed:
-                    self.goal_talker.publish(self.goal_pose)
-                    self.arm_state = 1
-                    self.motor_ready = False
-            elif self.arm_state==1:
-                # arm is below item
-                if self.motor_ready:
-                    self.goal_pose.z += 0.05
-                    self.goal_talker.publish(self.goal_pose)
-                    self.arm_state = 2
-                    self.motor_ready = False
-            elif self.arm_state==2:
-                # arm has collected item
-                if self.motor_ready and self.limit_switch_pressed:
-                    self.goal_pose.z = self.collection_pose
-                    self.goal_talker.publish(self.goal_pose)
-                    self.arm_state = 3
-                    self.motor_ready = False
-            elif self.arm_state==3:
-                # item has been collected
-                if self.motor_ready and not self.limit_switch_pressed:
-                    self.goal_pose.z = self.rest_pose
-                    self.goal_talker.publish(self.goal_pose)
-                    self.arm_state = 3
-                    self.motor_ready = False
-                    self.arm_state = 0
+# class LS2XBOT:
+#     def __init__(self):
+#         self.cmd_talker = rospy.Publisher('/goal', Pose)
+    
+#     def goal_callback(self, limit_msg, goal_msg):
+#         limit_msg = bool(limit_msg.data)
+#         goal = goal_msg.data
+#         if not goal.start_seq:
+#             if goal.action == 'store':
+#                 if goal.ls_status != limit_msg: # if limit status changes (pressed when storing or open when retriving)
+#                     goal.start_seq = True
+
+#         self.cmd_talker.pub(goal)
+
+#     def run(self):
+#         # rospy.Subscriber('/limit_switch', Bool, self.ls_callback)
+#         # rospy.Subsciber('/goal', String, self.goal_callback)
+
+#         limit_sub = message_filters.Subscriber('/limit_switch', Bool)
+#         goal_sub = message_filters.Subscriber('/goal', String)
+
+#         ts = message_filters.TimeSynchronizer([limit_sub, goal_sub], 10)
+#         ts.registerCallback(self.callback)
+#         rospy.spin()
+
 
 def main():
     ui_node = UI2XBOT
